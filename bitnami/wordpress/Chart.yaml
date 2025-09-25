@@ -17,11 +17,11 @@ dependencies:
   - condition: memcached.enabled
     name: memcached
     repository: file://../memcached
-    version: 7.x.x
+    version: 8.x.x
   - condition: mariadb.enabled
     name: mariadb
     repository: file://../mariadb
-    version: 22.x.x
+    version: 23.x.x
   - name: common
     repository: file://../common
     tags:
