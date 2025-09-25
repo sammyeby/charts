@@ -89,8 +89,8 @@ diagnosticMode:
 ##
 image:
   registry: docker.io
-  repository: bitnami/wordpress
-  tag: 6.8.2-debian-12-r4
+  repository: wordpress
+  tag: 6.8.2
   digest: ""
   ## Specify a imagePullPolicy
   ## ref: https://kubernetes.io/docs/concepts/containers/images/#pre-pulled-images
@@ -492,8 +492,8 @@ readinessProbe:
   enabled: true
   httpGet:
     path: /wp-login.php
-    port: '{{ .Values.wordpressScheme }}'
-    scheme: '{{ .Values.wordpressScheme | upper }}'
+    port: "{{ .Values.wordpressScheme }}"
+    scheme: "{{ .Values.wordpressScheme | upper }}"
     ## If using an HTTPS-terminating load-balancer, the probes may need to behave
     ## like the balancer to prevent HTTP 302 responses. According to the Kubernetes
     ## docs, 302 should be considered "successful", but this issue on GitHub
@@ -521,8 +521,8 @@ startupProbe:
   enabled: false
   httpGet:
     path: /wp-login.php
-    port: '{{ .Values.wordpressScheme }}'
-    scheme: '{{ .Values.wordpressScheme | upper }}'
+    port: "{{ .Values.wordpressScheme }}"
+    scheme: "{{ .Values.wordpressScheme | upper }}"
     ## If using an HTTPS-terminating load-balancer, the probes may need to behave
     ## like the balancer to prevent HTTP 302 responses. According to the Kubernetes
     ## docs, 302 should be considered "successful", but this issue on GitHub
@@ -895,8 +895,8 @@ volumePermissions:
   ##
   image:
     registry: docker.io
-    repository: bitnami/os-shell
-    tag: 12-debian-12-r50
+    repository: alpine # bitnami/os-shell
+    tag: 3.22.1
     digest: ""
     pullPolicy: IfNotPresent
     ## Optionally specify an array of imagePullSecrets.
@@ -998,8 +998,8 @@ metrics:
   ##
   image:
     registry: docker.io
-    repository: bitnami/apache-exporter
-    tag: 1.0.10-debian-12-r55
+    repository: lusotycoon/apache-exporter # bitnami/apache-exporter
+    tag: v1.0.10
     digest: ""
     pullPolicy: IfNotPresent
     ## Optionally specify an array of imagePullSecrets.

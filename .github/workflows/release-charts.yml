@@ -1,0 +1,52 @@
+name: Release Charts
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "bitnami/*/Chart.yaml"
+  release:
+    types: [published]
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+
+      - name: Log in to GitHub Container Registry
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ${{ env.REGISTRY }} --username ${{ github.actor }} --password-stdin
+
+      - name: Package and Push Charts
+        run: |
+          for chart in bitnami/*/Chart.yaml; do
+            chart_dir=$(dirname "$chart")
+            chart_name=$(basename "$chart_dir")
+            
+            echo "Processing chart: $chart_name"
+            
+            # Package the chart
+            helm package "$chart_dir" --destination ./packages
+            
+            # Push to GHCR
+            helm push "./packages/${chart_name}-"*.tgz "oci://${{ env.REGISTRY }}/${{ github.repository_owner }}/charts"
+          done
