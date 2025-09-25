@@ -4,18 +4,18 @@
 annotations:
   images: |
     - name: os-shell
-      image: docker.io/bitnami/os-shell:12-debian-12-r51
+      image: docker.io/alpine:3.22.1
     - name: postgres-exporter
-      image: docker.io/bitnami/postgres-exporter:0.17.1-debian-12-r16
+      image: docker.io/prometheuscommunity/postgres-exporter:v0.17.0
     - name: postgresql
-      image: docker.io/bitnami/postgresql:17.6.0-debian-12-r4
+      image: docker.io/postgres:17.6-alpine
   licenses: Apache-2.0
   tanzuCategory: service
 apiVersion: v2
 appVersion: 17.6.0
 dependencies:
   - name: common
-    repository: file://../common
+    repository: oci://ghcr.io/sammyeby/charts
     tags:
       - bitnami-common
     version: 2.x.x

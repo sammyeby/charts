@@ -16,14 +16,14 @@ appVersion: 6.8.2
 dependencies:
   - condition: memcached.enabled
     name: memcached
-    repository: file://../memcached
+    repository: oci://ghcr.io/sammyeby/charts
     version: 8.x.x
   - condition: mariadb.enabled
     name: mariadb
-    repository: file://../mariadb
+    repository: oci://ghcr.io/sammyeby/charts
     version: 23.x.x
   - name: common
-    repository: file://../common
+    repository: oci://ghcr.io/sammyeby/charts
     tags:
       - bitnami-common
     version: 2.x.x
