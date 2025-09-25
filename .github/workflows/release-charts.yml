@@ -42,7 +42,7 @@ jobs:
       - name: Package and Push Charts
         run: |
           # Define the charts we want to publish
-          CHARTS_TO_PUBLISH=("common" "postgresql" "mariadb" "wordpress" "keycloak")
+          CHARTS_TO_PUBLISH=("common" "memcached" "postgresql" "mariadb" "wordpress" "keycloak")
 
           # First, package the common chart (base dependency)
           if [ -d "bitnami/common" ]; then
