@@ -36,13 +36,40 @@ jobs:
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ${{ env.REGISTRY }} --username ${{ github.actor }} --password-stdin
 
+      - name: Create packages directory
+        run: mkdir -p ./packages
+
       - name: Package and Push Charts
         run: |
-          for chart in bitnami/*/Chart.yaml; do
-            chart_dir=$(dirname "$chart")
-            chart_name=$(basename "$chart_dir")
+          # Define the charts we want to publish
+          CHARTS_TO_PUBLISH=("common" "postgresql" "mariadb" "wordpress" "keycloak")
+
+          # First, package the common chart (base dependency)
+          if [ -d "bitnami/common" ]; then
+            echo "Processing chart: common"
+            helm package bitnami/common --destination ./packages
+            helm push "./packages/common-"*.tgz "oci://${{ env.REGISTRY }}/${{ github.repository_owner }}/charts"
+          fi
+
+          # Then package the specified charts
+          for chart_name in "${CHARTS_TO_PUBLISH[@]}"; do
+            # Skip common chart as it's already processed
+            if [ "$chart_name" = "common" ]; then
+              continue
+            fi
+            
+            chart_dir="bitnami/$chart_name"
+            
+            # Check if chart directory exists
+            if [ ! -d "$chart_dir" ]; then
+              echo "Warning: Chart directory $chart_dir does not exist, skipping..."
+              continue
+            fi
             
             echo "Processing chart: $chart_name"
+            
+            # Update dependencies before packaging
+            helm dependency update "$chart_dir" || echo "Warning: Could not update dependencies for $chart_name"
             
             # Package the chart
             helm package "$chart_dir" --destination ./packages
