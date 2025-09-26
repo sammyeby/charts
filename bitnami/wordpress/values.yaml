@@ -88,8 +88,8 @@ diagnosticMode:
 ## @param image.debug Specify if debug values should be set
 ##
 image:
-  registry: docker.io
-  repository: wordpress
+  registry: ghcr.io
+  repository: sammyeby/bitnami-wordpress
   tag: 6.8.2
   digest: ""
   ## Specify a imagePullPolicy
