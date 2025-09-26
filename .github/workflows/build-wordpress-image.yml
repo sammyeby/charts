@@ -51,6 +51,7 @@ jobs:
             type=ref,event=pr
             type=sha,prefix={{branch}}-
             type=raw,value=${{ github.event.inputs.wordpress_version || '6.8.2' }}
+            type=raw,value=${{ github.event.inputs.wordpress_version || '6.8.2' }}-minimal
             type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build and push Docker image

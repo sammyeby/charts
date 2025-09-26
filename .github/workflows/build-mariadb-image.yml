@@ -51,6 +51,7 @@ jobs:
             type=ref,event=pr
             type=sha,prefix={{branch}}-
             type=raw,value=${{ github.event.inputs.mariadb_version || '12.0.2-ubi' }}
+            type=raw,value=12.0.2-minimal
             type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build and push Docker image

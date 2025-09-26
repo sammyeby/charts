@@ -12,7 +12,7 @@ annotations:
   licenses: Apache-2.0
   tanzuCategory: service
 apiVersion: v2
-appVersion: 17.6.0
+appVersion: "17"
 dependencies:
   - name: common
     repository: oci://ghcr.io/sammyeby/charts
