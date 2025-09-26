@@ -121,7 +121,7 @@ diagnosticMode:
 image:
   registry: ghcr.io
   repository: sammyeby/bitnami-postgresql
-  tag: 17.6-alpine
+  tag: "17-minimal"
   digest: ""
   ## Specify a imagePullPolicy
   ## ref: https://kubernetes.io/docs/concepts/containers/images/#pre-pulled-images

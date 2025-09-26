@@ -100,7 +100,7 @@ serviceBindings:
 image:
   registry: ghcr.io
   repository: sammyeby/bitnami-mariadb
-  tag: 12.0.2-ubi
+  tag: "12.0.2-minimal"
   digest: ""
   ## Specify a imagePullPolicy
   ## ref: https://kubernetes.io/docs/concepts/containers/images/#pre-pulled-images

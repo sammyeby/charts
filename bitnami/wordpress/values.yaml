@@ -90,7 +90,7 @@ diagnosticMode:
 image:
   registry: ghcr.io
   repository: sammyeby/bitnami-wordpress
-  tag: 6.8.2
+  tag: "6.8.2-minimal"
   digest: ""
   ## Specify a imagePullPolicy
   ## ref: https://kubernetes.io/docs/concepts/containers/images/#pre-pulled-images

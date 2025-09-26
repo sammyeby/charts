@@ -8,7 +8,7 @@ annotations:
     - name: postgres-exporter
       image: docker.io/prometheuscommunity/postgres-exporter:v0.17.0
     - name: postgresql
-      image: docker.io/postgres:17.6-alpine
+      image: ghcr.io/sammyeby/bitnami-postgresql:17-minimal
   licenses: Apache-2.0
   tanzuCategory: service
 apiVersion: v2
@@ -38,4 +38,4 @@ maintainers:
 name: postgresql
 sources:
   - https://github.com/bitnami/charts/tree/main/bitnami/postgresql
-version: 17.0.1
+version: 17.1.0
