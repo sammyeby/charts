@@ -1,24 +1,24 @@
-name: Build and Push Custom PostgreSQL Image
+name: Build and Push Custom Keycloak Image
 
 on:
   push:
     branches: [main]
     paths:
-      - "docker/postgresql/**"
+      - "docker/keycloak/**"
   pull_request:
     branches: [main]
     paths:
-      - "docker/postgresql/**"
+      - "docker/keycloak/**"
   workflow_dispatch:
     inputs:
-      postgresql_version:
-        description: "PostgreSQL version to build"
+      keycloak_version:
+        description: "Keycloak version to build"
         required: false
-        default: "17.6-alpine"
+        default: "26.3.5"
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: sammyeby/bitnami-postgresql
+  IMAGE_NAME: sammyeby/bitnami-keycloak
 
 jobs:
   build-and-push:
@@ -50,19 +50,19 @@ jobs:
             type=ref,event=branch
             type=ref,event=pr
             type=sha,prefix={{branch}}-
-            type=raw,value=${{ github.event.inputs.postgresql_version || '17.6-alpine' }}
+            type=raw,value=${{ github.event.inputs.keycloak_version || '26.3.5' }}
             type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: ./docker/postgresql
+          context: ./docker/keycloak
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            POSTGRESQL_VERSION=${{ github.event.inputs.postgresql_version || '17.6-alpine' }}
+            KEYCLOAK_VERSION=${{ github.event.inputs.keycloak_version || '26.3.5' }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 

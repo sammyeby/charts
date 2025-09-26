@@ -1,0 +1,215 @@
+#!/bin/bash
+# Keycloak environment setup script for Bitnami compatibility
+
+set -o errexit
+set -o nounset
+set -o pipefail
+
+# Source logging library
+. /opt/bitnami/scripts/liblog.sh
+
+# Bitnami directories
+export KEYCLOAK_VOLUME_DIR="/bitnami/keycloak"
+export KEYCLOAK_BASE_DIR="/opt/bitnami/keycloak"
+export KEYCLOAK_CONF_DIR="$KEYCLOAK_BASE_DIR/conf"
+export KEYCLOAK_DATA_DIR="$KEYCLOAK_BASE_DIR/data"
+export KEYCLOAK_LOG_DIR="$KEYCLOAK_BASE_DIR/logs"
+export KEYCLOAK_TMP_DIR="$KEYCLOAK_BASE_DIR/tmp"
+export KEYCLOAK_BIN_DIR="$KEYCLOAK_BASE_DIR/bin"
+export KEYCLOAK_PROVIDERS_DIR="$KEYCLOAK_BASE_DIR/providers"
+export KEYCLOAK_THEMES_DIR="$KEYCLOAK_BASE_DIR/themes"
+
+# Default configuration
+export KEYCLOAK_HTTP_PORT="${KEYCLOAK_HTTP_PORT:-8080}"
+export KEYCLOAK_HTTPS_PORT="${KEYCLOAK_HTTPS_PORT:-8443}"
+export KEYCLOAK_AJP_PORT="${KEYCLOAK_AJP_PORT:-8009}"
+export KEYCLOAK_MANAGEMENT_PORT="${KEYCLOAK_MANAGEMENT_PORT:-9990}"
+
+# Authentication configuration
+export KEYCLOAK_ADMIN_USER="${KEYCLOAK_ADMIN_USER:-admin}"
+export KEYCLOAK_ADMIN_PASSWORD="${KEYCLOAK_ADMIN_PASSWORD:-}"
+export KEYCLOAK_MANAGEMENT_USER="${KEYCLOAK_MANAGEMENT_USER:-manager}"
+export KEYCLOAK_MANAGEMENT_PASSWORD="${KEYCLOAK_MANAGEMENT_PASSWORD:-}"
+
+# Database configuration
+export KEYCLOAK_DATABASE_HOST="${KEYCLOAK_DATABASE_HOST:-}"
+export KEYCLOAK_DATABASE_PORT="${KEYCLOAK_DATABASE_PORT:-}"
+export KEYCLOAK_DATABASE_NAME="${KEYCLOAK_DATABASE_NAME:-keycloak}"
+export KEYCLOAK_DATABASE_USER="${KEYCLOAK_DATABASE_USER:-}"
+export KEYCLOAK_DATABASE_PASSWORD="${KEYCLOAK_DATABASE_PASSWORD:-}"
+export KEYCLOAK_DATABASE_SCHEMA="${KEYCLOAK_DATABASE_SCHEMA:-public}"
+export KEYCLOAK_DATABASE_VENDOR="${KEYCLOAK_DATABASE_VENDOR:-h2}"
+
+# Keycloak specific configuration
+export KEYCLOAK_HOSTNAME="${KEYCLOAK_HOSTNAME:-}"
+export KEYCLOAK_HOSTNAME_ADMIN="${KEYCLOAK_HOSTNAME_ADMIN:-}"
+export KEYCLOAK_HOSTNAME_STRICT="${KEYCLOAK_HOSTNAME_STRICT:-false}"
+export KEYCLOAK_HOSTNAME_STRICT_BACKCHANNEL="${KEYCLOAK_HOSTNAME_STRICT_BACKCHANNEL:-false}"
+export KEYCLOAK_HTTP_ENABLED="${KEYCLOAK_HTTP_ENABLED:-true}"
+export KEYCLOAK_HTTPS_CERTIFICATE_FILE="${KEYCLOAK_HTTPS_CERTIFICATE_FILE:-}"
+export KEYCLOAK_HTTPS_CERTIFICATE_KEY_FILE="${KEYCLOAK_HTTPS_CERTIFICATE_KEY_FILE:-}"
+export KEYCLOAK_HTTPS_CERTIFICATE_KEY_PASSWORD="${KEYCLOAK_HTTPS_CERTIFICATE_KEY_PASSWORD:-}"
+export KEYCLOAK_HTTPS_KEYSTORE_FILE="${KEYCLOAK_HTTPS_KEYSTORE_FILE:-}"
+export KEYCLOAK_HTTPS_KEYSTORE_PASSWORD="${KEYCLOAK_HTTPS_KEYSTORE_PASSWORD:-}"
+export KEYCLOAK_HTTPS_TRUSTSTORE_FILE="${KEYCLOAK_HTTPS_TRUSTSTORE_FILE:-}"
+export KEYCLOAK_HTTPS_TRUSTSTORE_PASSWORD="${KEYCLOAK_HTTPS_TRUSTSTORE_PASSWORD:-}"
+
+# Proxy configuration
+export KEYCLOAK_PROXY="${KEYCLOAK_PROXY:-none}"
+export KEYCLOAK_PROXY_HEADERS="${KEYCLOAK_PROXY_HEADERS:-xforwarded}"
+
+# Cache configuration
+export KEYCLOAK_CACHE="${KEYCLOAK_CACHE:-local}"
+export KEYCLOAK_CACHE_STACK="${KEYCLOAK_CACHE_STACK:-}"
+export KEYCLOAK_CACHE_CONFIG_FILE="${KEYCLOAK_CACHE_CONFIG_FILE:-}"
+
+# Logging configuration
+export KEYCLOAK_LOG_LEVEL="${KEYCLOAK_LOG_LEVEL:-INFO}"
+export KEYCLOAK_LOG_OUTPUT="${KEYCLOAK_LOG_OUTPUT:-default}"
+
+# Feature configuration
+export KEYCLOAK_FEATURES="${KEYCLOAK_FEATURES:-}"
+export KEYCLOAK_FEATURES_DISABLED="${KEYCLOAK_FEATURES_DISABLED:-}"
+
+# Extra configuration
+export KEYCLOAK_EXTRA_ARGS="${KEYCLOAK_EXTRA_ARGS:-}"
+export KEYCLOAK_SPI_TRUSTSTORE_FILE_FILE="${KEYCLOAK_SPI_TRUSTSTORE_FILE_FILE:-}"
+export KEYCLOAK_SPI_TRUSTSTORE_FILE_PASSWORD="${KEYCLOAK_SPI_TRUSTSTORE_FILE_PASSWORD:-}"
+export KEYCLOAK_SPI_TRUSTSTORE_FILE_HOSTNAME_VERIFICATION_POLICY="${KEYCLOAK_SPI_TRUSTSTORE_FILE_HOSTNAME_VERIFICATION_POLICY:-}"
+
+# Java configuration
+export KEYCLOAK_JAVA_OPTS="${KEYCLOAK_JAVA_OPTS:--Xms512m -Xmx1024m}"
+
+# User information
+export KEYCLOAK_DAEMON_USER="keycloak"
+export KEYCLOAK_DAEMON_GROUP="keycloak"
+
+# Map Bitnami environment variables to Keycloak native variables
+if [[ -n "${KEYCLOAK_ADMIN_USER:-}" ]]; then
+    export KC_BOOTSTRAP_ADMIN_USERNAME="$KEYCLOAK_ADMIN_USER"
+fi
+
+if [[ -n "${KEYCLOAK_ADMIN_PASSWORD:-}" ]]; then
+    export KC_BOOTSTRAP_ADMIN_PASSWORD="$KEYCLOAK_ADMIN_PASSWORD"
+fi
+
+if [[ -n "${KEYCLOAK_DATABASE_HOST:-}" ]]; then
+    export KC_DB_URL_HOST="$KEYCLOAK_DATABASE_HOST"
+fi
+
+if [[ -n "${KEYCLOAK_DATABASE_PORT:-}" ]]; then
+    export KC_DB_URL_PORT="$KEYCLOAK_DATABASE_PORT"
+fi
+
+if [[ -n "${KEYCLOAK_DATABASE_NAME:-}" ]]; then
+    export KC_DB_URL_DATABASE="$KEYCLOAK_DATABASE_NAME"
+fi
+
+if [[ -n "${KEYCLOAK_DATABASE_USER:-}" ]]; then
+    export KC_DB_USERNAME="$KEYCLOAK_DATABASE_USER"
+fi
+
+if [[ -n "${KEYCLOAK_DATABASE_PASSWORD:-}" ]]; then
+    export KC_DB_PASSWORD="$KEYCLOAK_DATABASE_PASSWORD"
+fi
+
+if [[ -n "${KEYCLOAK_DATABASE_VENDOR:-}" ]]; then
+    case "$KEYCLOAK_DATABASE_VENDOR" in
+        postgresql)
+            export KC_DB="postgres"
+            ;;
+        mysql)
+            export KC_DB="mysql"
+            ;;
+        mariadb)
+            export KC_DB="mariadb"
+            ;;
+        oracle)
+            export KC_DB="oracle"
+            ;;
+        mssql)
+            export KC_DB="mssql"
+            ;;
+        h2)
+            export KC_DB="dev-file"
+            ;;
+        *)
+            export KC_DB="$KEYCLOAK_DATABASE_VENDOR"
+            ;;
+    esac
+fi
+
+if [[ -n "${KEYCLOAK_HOSTNAME:-}" ]]; then
+    export KC_HOSTNAME="$KEYCLOAK_HOSTNAME"
+fi
+
+if [[ -n "${KEYCLOAK_HOSTNAME_ADMIN:-}" ]]; then
+    export KC_HOSTNAME_ADMIN="$KEYCLOAK_HOSTNAME_ADMIN"
+fi
+
+if [[ "${KEYCLOAK_HOSTNAME_STRICT:-}" == "true" ]]; then
+    export KC_HOSTNAME_STRICT="true"
+else
+    export KC_HOSTNAME_STRICT="false"
+fi
+
+if [[ "${KEYCLOAK_HTTP_ENABLED:-}" == "true" ]]; then
+    export KC_HTTP_ENABLED="true"
+else
+    export KC_HTTP_ENABLED="false"
+fi
+
+if [[ -n "${KEYCLOAK_HTTP_PORT:-}" ]]; then
+    export KC_HTTP_PORT="$KEYCLOAK_HTTP_PORT"
+fi
+
+if [[ -n "${KEYCLOAK_HTTPS_PORT:-}" ]]; then
+    export KC_HTTPS_PORT="$KEYCLOAK_HTTPS_PORT"
+fi
+
+if [[ -n "${KEYCLOAK_PROXY:-}" ]]; then
+    export KC_PROXY="$KEYCLOAK_PROXY"
+fi
+
+if [[ -n "${KEYCLOAK_LOG_LEVEL:-}" ]]; then
+    export KC_LOG_LEVEL="$KEYCLOAK_LOG_LEVEL"
+fi
+
+if [[ -n "${KEYCLOAK_CACHE:-}" ]]; then
+    export KC_CACHE="$KEYCLOAK_CACHE"
+fi
+
+if [[ -n "${KEYCLOAK_FEATURES:-}" ]]; then
+    export KC_FEATURES="$KEYCLOAK_FEATURES"
+fi
+
+if [[ -n "${KEYCLOAK_FEATURES_DISABLED:-}" ]]; then
+    export KC_FEATURES_DISABLED="$KEYCLOAK_FEATURES_DISABLED"
+fi
+
+# SSL/TLS configuration
+if [[ -n "${KEYCLOAK_HTTPS_CERTIFICATE_FILE:-}" ]]; then
+    export KC_HTTPS_CERTIFICATE_FILE="$KEYCLOAK_HTTPS_CERTIFICATE_FILE"
+fi
+
+if [[ -n "${KEYCLOAK_HTTPS_CERTIFICATE_KEY_FILE:-}" ]]; then
+    export KC_HTTPS_CERTIFICATE_KEY_FILE="$KEYCLOAK_HTTPS_CERTIFICATE_KEY_FILE"
+fi
+
+if [[ -n "${KEYCLOAK_HTTPS_KEYSTORE_FILE:-}" ]]; then
+    export KC_HTTPS_KEY_STORE_FILE="$KEYCLOAK_HTTPS_KEYSTORE_FILE"
+fi
+
+if [[ -n "${KEYCLOAK_HTTPS_KEYSTORE_PASSWORD:-}" ]]; then
+    export KC_HTTPS_KEY_STORE_PASSWORD="$KEYCLOAK_HTTPS_KEYSTORE_PASSWORD"
+fi
+
+if [[ -n "${KEYCLOAK_HTTPS_TRUSTSTORE_FILE:-}" ]]; then
+    export KC_HTTPS_TRUST_STORE_FILE="$KEYCLOAK_HTTPS_TRUSTSTORE_FILE"
+fi
+
+if [[ -n "${KEYCLOAK_HTTPS_TRUSTSTORE_PASSWORD:-}" ]]; then
+    export KC_HTTPS_TRUST_STORE_PASSWORD="$KEYCLOAK_HTTPS_TRUSTSTORE_PASSWORD"
+fi
+
+info "Keycloak environment configured successfully"

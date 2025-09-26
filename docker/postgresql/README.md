@@ -41,6 +41,7 @@ This custom image provides Bitnami compatibility by:
 ### Building the Image
 
 **Local Build:**
+
 ```bash
 # Build with default PostgreSQL version (17.6-alpine)
 docker build -t ghcr.io/sammyeby/bitnami-postgresql:latest .
@@ -50,6 +51,7 @@ docker build -t ghcr.io/sammyeby/bitnami-postgresql:latest .
 ```
 
 **GitHub Actions (Automated):**
+
 - Images are automatically built and pushed to `ghcr.io/sammyeby/bitnami-postgresql` when changes are made to `docker/postgresql/`
 - Manual builds can be triggered via GitHub Actions workflow dispatch with custom PostgreSQL version
 - Multi-platform builds (linux/amd64, linux/arm64) with caching for faster builds
@@ -113,6 +115,7 @@ The image maintains compatibility with Bitnami paths:
 The image supports PostgreSQL replication with Bitnami-compatible configuration:
 
 ### Master Configuration
+
 ```yaml
 env:
   - name: POSTGRES_REPLICATION_MODE
@@ -124,6 +127,7 @@ env:
 ```
 
 ### Slave Configuration
+
 ```yaml
 env:
   - name: POSTGRES_REPLICATION_MODE

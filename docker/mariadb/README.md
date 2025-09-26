@@ -36,6 +36,7 @@ This custom image provides Bitnami compatibility by:
 ### Building the Image
 
 **Local Build:**
+
 ```bash
 # Build with default MariaDB version (12.0.2-ubi)
 docker build -t ghcr.io/sammyeby/bitnami-mariadb:latest .
@@ -45,6 +46,7 @@ docker build -t ghcr.io/sammyeby/bitnami-mariadb:latest .
 ```
 
 **GitHub Actions (Automated):**
+
 - Images are automatically built and pushed to `ghcr.io/sammyeby/bitnami-mariadb` when changes are made to `docker/mariadb/`
 - Manual builds can be triggered via GitHub Actions workflow dispatch with custom MariaDB version
 - Multi-platform builds (linux/amd64, linux/arm64) with caching for faster builds
