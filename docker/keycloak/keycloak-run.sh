@@ -60,8 +60,8 @@ keycloak_run() {
         export JAVA_OPTS="$KEYCLOAK_JAVA_OPTS"
     fi
     
-    # Switch to keycloak user and run
-    exec gosu keycloak /opt/keycloak/bin/kc.sh "${run_args[@]}"
+    # Execute Keycloak (already running as keycloak user)
+    exec /opt/keycloak/bin/kc.sh "${run_args[@]}"
 }
 
 # Function to handle database initialization
