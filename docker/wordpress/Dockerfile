@@ -1,7 +1,8 @@
 # Bitnami-compatible WordPress image
 # Simple drop-in replacement for ghcr.io/sammyeby/bitnami-wordpress
 
-FROM wordpress:6.8.2
+ARG WORDPRESS_VERSION=6.8.2
+FROM wordpress:${WORDPRESS_VERSION}
 
 # Install minimal required packages (only what's absolutely needed)
 RUN apt-get update && apt-get install -y --no-install-recommends \

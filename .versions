@@ -1,0 +1,15 @@
+# Image Versions
+# This file contains the default versions for all base images
+# Update these versions when upgrading base images
+
+# WordPress
+WORDPRESS_VERSION=6.8.2
+
+# MariaDB  
+MARIADB_VERSION=12.0.2
+
+# PostgreSQL
+POSTGRESQL_VERSION=17
+
+# Keycloak (for future use)
+KEYCLOAK_VERSION=26.0

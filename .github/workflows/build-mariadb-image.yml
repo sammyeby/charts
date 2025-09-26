@@ -14,7 +14,7 @@ on:
       mariadb_version:
         description: "MariaDB version to build"
         required: false
-        default: "12.0.2-ubi"
+        default: "12.0.2"
 
 env:
   REGISTRY: ghcr.io
@@ -50,9 +50,10 @@ jobs:
             type=ref,event=branch
             type=ref,event=pr
             type=sha,prefix={{branch}}-
-            type=raw,value=${{ github.event.inputs.mariadb_version || '12.0.2-ubi' }}
-            type=raw,value=12.0.2-minimal
+            type=raw,value=${{ github.event.inputs.mariadb_version || '12.0.2' }}
+            type=raw,value=${{ github.event.inputs.mariadb_version || '12.0.2' }}-minimal
             type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=minimal,enable={{is_default_branch}}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -63,7 +64,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            MARIADB_VERSION=${{ github.event.inputs.mariadb_version || '12.0.2-ubi' }}
+            MARIADB_VERSION=${{ github.event.inputs.mariadb_version || '12.0.2' }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 

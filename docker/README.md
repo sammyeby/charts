@@ -1,255 +1,77 @@
 # Custom Bitnami-Compatible Docker Images
 
-This repository contains custom Docker images that provide full compatibility with Bitnami Helm charts while using official upstream images as their base. These images eliminate Bitnami licensing dependencies while maintaining 100% functionality.
+This directory contains minimal, Bitnami-compatible Docker images that serve as drop-in replacements for official Bitnami images.
 
-## Available Images
+## Image Overview
 
-### 🐳 WordPress Image
+| Service    | Base Image        | Size                | Bitnami Compatibility |
+| ---------- | ----------------- | ------------------- | --------------------- |
+| WordPress  | `wordpress:6.8.2` | 736MB (+2MB)        | ✅ Full               |
+| MariaDB    | `mariadb:12.0.2`  | 332MB (-42% vs UBI) | ✅ Full               |
+| PostgreSQL | `postgres:17`     | 440MB (+2MB)        | ✅ Full               |
 
-- **Registry**: `ghcr.io/sammyeby/bitnami-wordpress`
-- **Base**: Official WordPress 6.8.2
-- **Size**: ~435MB (vs 734MB official Bitnami)
-- **Chart**: `bitnami/wordpress`
+## Version Management
 
-### 🗄️ MariaDB Image
+### Current Versions
 
-- **Registry**: `ghcr.io/sammyeby/bitnami-mariadb`
-- **Base**: Official MariaDB 12.0.2-ubi
-- **Size**: Optimized build
-- **Chart**: `bitnami/mariadb`
+- **WordPress**: `6.8.2` → `6.8.2-minimal`
+- **MariaDB**: `12.0.2` → `12.0.2-minimal`
+- **PostgreSQL**: `17` → `17-minimal`
 
-### 🐘 PostgreSQL Image
+### Upgrading Base Image Versions
 
-- **Registry**: `ghcr.io/sammyeby/bitnami-postgresql`
-- **Base**: Official PostgreSQL 17.6-alpine
-- **Size**: Optimized build
-- **Chart**: `bitnami/postgresql`
+#### Method 1: Manual Workflow Trigger (Recommended)
 
-## 🚀 Automated Builds
+1. Go to GitHub Actions → Select workflow (e.g., "Build and Push Custom WordPress Image")
+2. Click "Run workflow"
+3. Enter new version (e.g., `6.8.3` for WordPress)
+4. The workflow will build and push both `6.8.3` and `6.8.3-minimal` tags
 
-Both images are automatically built and published via GitHub Actions:
+#### Method 2: Update Workflow Defaults
 
-### Triggers
+1. Edit the workflow file (e.g., `.github/workflows/build-wordpress-image.yml`)
+2. Update the `default:` value in the `workflow_dispatch` input
+3. Commit and push - this triggers automatic build
 
-- **Push to main**: Builds when files in `docker/*/` directories change
-- **Pull Requests**: Builds for testing (no publish)
-- **Manual Dispatch**: Allows custom version builds via GitHub UI
+#### Method 3: Update Dockerfile Default
 
-### Features
+1. Edit the Dockerfile (e.g., `docker/wordpress/Dockerfile`)
+2. Update the `ARG WORDPRESS_VERSION=6.8.2` line
+3. Commit and push - this triggers automatic build
 
-- **Multi-platform**: linux/amd64, linux/arm64
-- **Caching**: GitHub Actions cache for faster builds
-- **Versioning**: Automatic tagging with version numbers and `latest`
-- **Security**: Images published to GitHub Container Registry
+### Chart Updates
 
-### Workflow Files
+After upgrading base images, update the Helm charts:
 
-- `.github/workflows/build-wordpress-image.yml`
-- `.github/workflows/build-mariadb-image.yml`
-- `.github/workflows/build-postgresql-image.yml`
+1. **Chart.yaml**: Update chart version (e.g., `27.1.0` → `27.2.0`)
+2. **values.yaml**: Update image tag (e.g., `6.8.2-minimal` → `6.8.3-minimal`)
 
-## 🛠️ Development
+## Architecture
 
-### Local Building
+### Minimal Design Principles
 
-**WordPress:**
+- Single-stage builds (no complex multi-stage)
+- Minimal package additions (only `gettext-base`)
+- Maximum reuse of official image functionality
+- Environment variable compatibility layer only
 
-```bash
-cd docker/wordpress
-./build.sh [version]  # defaults to 6.8.2
-```
+### Bitnami Compatibility Features
 
-**MariaDB:**
+- **User/Group**: bitnami (1001:1001)
+- **Directory Structure**: `/opt/bitnami/*`, `/bitnami/*`
+- **Environment Variables**: Full mapping (e.g., `MARIADB_HOST` → `WORDPRESS_DB_HOST`)
+- **Port Configuration**: Standard Bitnami ports (8080 for HTTP)
 
-```bash
-cd docker/mariadb
-./build.sh [version]  # defaults to 12.0.2-ubi
-```
-
-**PostgreSQL:**
+## Local Testing
 
 ```bash
-cd docker/postgresql
-./build.sh [version]  # defaults to 17.6-alpine
+# WordPress + MariaDB
+docker compose -f docker-compose-test-simple.yml up -d
+
+# PostgreSQL + Keycloak
+docker compose -f docker-compose-test-keycloak.yml up -d
 ```
 
-### Testing Images
+## Production Deployment
 
-**WordPress:**
-
-```bash
-docker run -p 8080:8080 \
-  -e WORDPRESS_DATABASE_HOST=mariadb \
-  -e WORDPRESS_DATABASE_NAME=wordpress \
-  -e WORDPRESS_DATABASE_USER=wordpress \
-  -e WORDPRESS_DATABASE_PASSWORD=password \
-  ghcr.io/sammyeby/bitnami-wordpress:6.8.2
-```
-
-**MariaDB:**
-
-```bash
-docker run -p 3306:3306 \
-  -e MARIADB_ROOT_PASSWORD=rootpassword \
-  -e MARIADB_DATABASE=wordpress \
-  -e MARIADB_USER=wordpress \
-  -e MARIADB_PASSWORD=password \
-  ghcr.io/sammyeby/bitnami-mariadb:12.0.2-ubi
-```
-
-**PostgreSQL:**
-
-```bash
-docker run -p 5432:5432 \
-  -e POSTGRES_PASSWORD=password \
-  -e POSTGRES_DATABASE=testdb \
-  -e POSTGRES_USER=testuser \
-  ghcr.io/sammyeby/bitnami-postgresql:17.6-alpine
-```
-
-## 📦 Using with Helm Charts
-
-### WordPress Chart (`bitnami/wordpress`)
-
-```yaml
-image:
-  registry: ghcr.io
-  repository: sammyeby/bitnami-wordpress
-  tag: "6.8.2"
-  pullPolicy: IfNotPresent
-
-mariadb:
-  image:
-    registry: ghcr.io
-    repository: sammyeby/bitnami-mariadb
-    tag: "12.0.2-ubi"
-    pullPolicy: IfNotPresent
-```
-
-### MariaDB Chart (`bitnami/mariadb`)
-
-```yaml
-image:
-  registry: ghcr.io
-  repository: sammyeby/bitnami-mariadb
-  tag: "12.0.2-ubi"
-  pullPolicy: IfNotPresent
-```
-
-### PostgreSQL Chart (`bitnami/postgresql`)
-
-```yaml
-image:
-  registry: ghcr.io
-  repository: sammyeby/bitnami-postgresql
-  tag: "17.6-alpine"
-  pullPolicy: IfNotPresent
-```
-
-## 🔧 Compatibility Features
-
-Both images maintain full Bitnami compatibility:
-
-### Directory Structure
-
-- `/opt/bitnami/` - Bitnami application directory
-- `/bitnami/` - Data directory
-- Proper symlinks and permissions
-
-### User Management
-
-- `bitnami:bitnami` user/group (1001:1001)
-- Correct ownership and permissions
-- Security context compatibility
-
-### Scripts & Environment Variables
-
-- All expected Bitnami scripts (`libfs.sh`, etc.)
-- Environment variable mapping
-- Initialization and startup scripts
-
-### Configuration Paths
-
-- **WordPress**: `/opt/bitnami/wordpress/wp-config.php`
-- **MariaDB**: `/opt/bitnami/mariadb/conf/my.cnf`
-- **Apache**: Port 8080 (WordPress)
-- **MariaDB**: Port 3306 with socket compatibility
-
-## 🔍 Troubleshooting
-
-### Permission Issues
-
-```bash
-# Check user ID in pod
-kubectl exec -it <pod> -- id
-
-# Should show:
-# uid=1001(bitnami) gid=1001(bitnami) groups=1001(bitnami)
-```
-
-### Image Pull Issues
-
-```bash
-# Verify image exists
-docker pull ghcr.io/sammyeby/bitnami-wordpress:6.8.2
-docker pull ghcr.io/sammyeby/bitnami-mariadb:12.0.2-ubi
-```
-
-### Log Analysis
-
-```bash
-# WordPress logs
-kubectl logs <wordpress-pod> -c wordpress
-
-# MariaDB logs
-kubectl logs <mariadb-pod> -c mariadb
-```
-
-## 📋 Updating Versions
-
-### Update WordPress Version
-
-1. Edit `docker/wordpress/Dockerfile` - update `ARG WORDPRESS_VERSION`
-2. Edit `docker/wordpress/build.sh` - update default version
-3. Update `bitnami/wordpress/values.yaml` - update image tag
-4. Commit changes - GitHub Actions will build automatically
-
-### Update MariaDB Version
-
-1. Edit `docker/mariadb/Dockerfile` - update `ARG MARIADB_VERSION`
-2. Edit `docker/mariadb/build.sh` - update default version
-3. Update `bitnami/mariadb/values.yaml` - update image tag
-4. Commit changes - GitHub Actions will build automatically
-
-### Manual Workflow Dispatch
-
-You can trigger manual builds with custom versions:
-
-1. Go to GitHub Actions tab
-2. Select "Build and Push Custom [WordPress/MariaDB] Image"
-3. Click "Run workflow"
-4. Enter custom version (optional)
-5. Click "Run workflow"
-
-## 🎯 Benefits
-
-1. **Cost Effective**: No Bitnami licensing fees
-2. **Security**: Based on official upstream images
-3. **Size Optimized**: Smaller than official Bitnami images
-4. **Maintenance**: Automatic security updates from upstream
-5. **Compatibility**: Drop-in replacement for Bitnami images
-6. **CI/CD Ready**: Automated builds and publishing
-7. **Multi-platform**: Supports both x86_64 and ARM64
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create feature branch
-3. Make changes to `docker/*/` directories
-4. Test locally with build scripts
-5. Submit pull request
-6. Automated builds will test your changes
-
-## 📜 License
-
-This project follows the same licensing as the base Bitnami Helm charts (Apache 2.0).
+All images are automatically built and pushed to `ghcr.io/sammyeby/bitnami-*` with both versioned and `-minimal` tags for maximum compatibility with existing Bitnami Helm charts.

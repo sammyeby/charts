@@ -53,6 +53,7 @@ jobs:
             type=raw,value=${{ github.event.inputs.wordpress_version || '6.8.2' }}
             type=raw,value=${{ github.event.inputs.wordpress_version || '6.8.2' }}-minimal
             type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=minimal,enable={{is_default_branch}}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5

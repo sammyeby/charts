@@ -1,7 +1,8 @@
 # Minimal PostgreSQL image compatible with Bitnami Helm charts
-# Based on official PostgreSQL 17 with minimal Bitnami compatibility layer
+# Based on official PostgreSQL with minimal Bitnami compatibility layer
 
-FROM postgres:17
+ARG POSTGRESQL_VERSION=17
+FROM postgres:${POSTGRESQL_VERSION}
 
 # Install minimal packages needed for Bitnami compatibility
 RUN apt-get update && apt-get install -y --no-install-recommends \

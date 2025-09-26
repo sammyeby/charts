@@ -14,7 +14,7 @@ on:
       postgresql_version:
         description: "PostgreSQL version to build"
         required: false
-        default: "17.6-alpine"
+        default: "17"
 
 env:
   REGISTRY: ghcr.io
@@ -50,9 +50,10 @@ jobs:
             type=ref,event=branch
             type=ref,event=pr
             type=sha,prefix={{branch}}-
-            type=raw,value=${{ github.event.inputs.postgresql_version || '17.6-alpine' }}
-            type=raw,value=17-minimal
+            type=raw,value=${{ github.event.inputs.postgresql_version || '17' }}
+            type=raw,value=${{ github.event.inputs.postgresql_version || '17' }}-minimal
             type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=minimal,enable={{is_default_branch}}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -63,7 +64,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            POSTGRESQL_VERSION=${{ github.event.inputs.postgresql_version || '17.6-alpine' }}
+            POSTGRESQL_VERSION=${{ github.event.inputs.postgresql_version || '17' }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 

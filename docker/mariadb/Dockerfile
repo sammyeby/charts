@@ -1,7 +1,8 @@
 # Minimal MariaDB image compatible with Bitnami Helm charts
-# Based on official MariaDB 12.0.2 with minimal Bitnami compatibility layer
+# Based on official MariaDB with minimal Bitnami compatibility layer
 
-FROM mariadb:12.0.2
+ARG MARIADB_VERSION=12.0.2
+FROM mariadb:${MARIADB_VERSION}
 
 # Install minimal packages needed for Bitnami compatibility
 RUN apt-get update && apt-get install -y --no-install-recommends \
