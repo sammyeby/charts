@@ -1,0 +1,82 @@
+version: "3.8"
+
+services:
+  mariadb:
+    image: ghcr.io/sammyeby/bitnami-mariadb:12.0.2-ubi
+    container_name: test-mariadb
+    environment:
+      # MariaDB Configuration
+      - MARIADB_ROOT_PASSWORD=rootpassword123
+      - MARIADB_DATABASE=wordpress_test
+      - MARIADB_USER=wp_user
+      - MARIADB_PASSWORD=wp_password123
+      - BITNAMI_DEBUG=false
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/bitnami/mariadb
+    networks:
+      - wordpress_network
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "ping", "-uroot", "-prootpassword123"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  wordpress:
+    image: ghcr.io/sammyeby/bitnami-wordpress:6.8.2
+    container_name: test-wordpress
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    environment:
+      # WordPress Configuration
+      - WORDPRESS_DATABASE_NAME=wordpress_test
+      - WORDPRESS_DATABASE_USER=wp_user
+      - WORDPRESS_DATABASE_PASSWORD=wp_password123
+      - MARIADB_HOST=mariadb
+      - MARIADB_PORT_NUMBER=3306
+
+      # WordPress Admin User
+      - WORDPRESS_USERNAME=admin
+      - WORDPRESS_PASSWORD=admin123
+      - WORDPRESS_EMAIL=admin@test.local
+      - WORDPRESS_FIRST_NAME=Test
+      - WORDPRESS_LAST_NAME=Admin
+      - WORDPRESS_BLOG_NAME=Test WordPress Site
+
+      # WordPress Settings
+      - WORDPRESS_HTACCESS_OVERRIDE_NONE=no
+      - WORDPRESS_ENABLE_HTACCESS_PERSISTENCE=no
+      - WORDPRESS_TABLE_PREFIX=wp_
+      - WORDPRESS_SCHEME=http
+      - ALLOW_EMPTY_PASSWORD=yes
+      - BITNAMI_DEBUG=false
+
+      # Apache Settings
+      - APACHE_HTTP_PORT_NUMBER=8080
+      - APACHE_HTTPS_PORT_NUMBER=8443
+    ports:
+      - "8080:8080"
+      - "8443:8443"
+    volumes:
+      - wordpress_data:/bitnami/wordpress
+    networks:
+      - wordpress_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/wp-login.php"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  mariadb_data:
+    driver: local
+  wordpress_data:
+    driver: local
+
+networks:
+  wordpress_network:
+    driver: bridge

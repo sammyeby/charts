@@ -1,0 +1,62 @@
+version: "3.8"
+
+services:
+  postgresql:
+    image: minimal-postgresql:latest
+    container_name: test-postgresql-minimal
+    environment:
+      # PostgreSQL Configuration (Bitnami-style)
+      - POSTGRESQL_USERNAME=keycloak
+      - POSTGRESQL_PASSWORD=keycloak123
+      - POSTGRESQL_DATABASE=keycloak
+      - POSTGRESQL_POSTGRES_PASSWORD=postgres123
+      - POSTGRES_HOST_AUTH_METHOD=md5
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data
+    networks:
+      - keycloak_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U keycloak -d keycloak"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # For now, let's use the official Keycloak image to test PostgreSQL compatibility
+  keycloak:
+    image: keycloak/keycloak:26.0
+    container_name: test-keycloak-minimal
+    depends_on:
+      postgresql:
+        condition: service_healthy
+    environment:
+      # Database Configuration
+      - KC_DB=postgres
+      - KC_DB_URL=jdbc:postgresql://postgresql:5432/keycloak
+      - KC_DB_USERNAME=keycloak
+      - KC_DB_PASSWORD=keycloak123
+
+      # Keycloak Admin User
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin123
+
+      # Keycloak Configuration  
+      - KC_HTTP_ENABLED=true
+      - KC_HEALTH_ENABLED=true
+      - KC_METRICS_ENABLED=true
+      - KC_HOSTNAME=localhost:8081
+      - KC_HOSTNAME_STRICT=false
+    ports:
+      - "8081:8080"
+    networks:
+      - keycloak_network
+    command: start-dev
+
+volumes:
+  postgresql_data:
+    driver: local
+
+networks:
+  keycloak_network:
+    driver: bridge

@@ -1,66 +1,29 @@
-# Custom PostgreSQL image compatible with Bitnami Helm charts
-# Based on official PostgreSQL image but with Bitnami directory structure and scripts
+# Minimal PostgreSQL image compatible with Bitnami Helm charts
+# Based on official PostgreSQL 17 with minimal Bitnami compatibility layer
 
-ARG POSTGRESQL_VERSION=17.6-alpine
-FROM postgres:${POSTGRESQL_VERSION}
+FROM postgres:17
 
-# Install additional packages for Bitnami compatibility
-RUN apk add --no-cache \
-    ca-certificates \
-    curl \
-    bash
+# Install minimal packages needed for Bitnami compatibility
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gettext-base \
+    && rm -rf /var/lib/apt/lists/*
 
 # Create bitnami user and group
-RUN addgroup -g 1001 bitnami && \
-    adduser -D -u 1001 -G bitnami -h /opt/bitnami -s /bin/bash bitnami
+RUN groupadd -r bitnami --gid=1001 && \
+    useradd -r -g bitnami --uid=1001 --home-dir=/opt/bitnami --shell=/bin/bash bitnami
 
-# Create Bitnami directory structure
+# Create minimal Bitnami directory structure
 RUN mkdir -p /opt/bitnami/postgresql/conf \
     /opt/bitnami/postgresql/logs \
-    /opt/bitnami/postgresql/tmp \
-    /opt/bitnami/postgresql/secrets \
-    /opt/bitnami/postgresql/certs \
-    /opt/bitnami/scripts/postgresql \
-    /bitnami/postgresql/data \
-    /var/run/postgresql \
-    && ln -sf /bitnami/postgresql/data /var/lib/postgresql/data
+    /bitnami/postgresql \
+    && ln -sf /var/lib/postgresql/data /bitnami/postgresql/data
 
-# Ensure docker-entrypoint-initdb.d directory exists
-RUN mkdir -p /docker-entrypoint-initdb.d
+# Create minimal entrypoint script for environment variable mapping
+COPY docker-entrypoint.sh /usr/local/bin/postgresql-entrypoint.sh
+RUN chmod +x /usr/local/bin/postgresql-entrypoint.sh
 
-# Copy Bitnami compatibility scripts
-COPY libfs.sh /opt/bitnami/scripts/libfs.sh
-COPY liblog.sh /opt/bitnami/scripts/liblog.sh
-COPY postgresql-env.sh /opt/bitnami/scripts/postgresql-env.sh
-COPY libpostgresql.sh /opt/bitnami/scripts/libpostgresql.sh
-COPY postgresql-setup.sh /opt/bitnami/scripts/postgresql/setup.sh
-COPY postgresql-entrypoint.sh /opt/bitnami/scripts/postgresql/entrypoint.sh
-COPY postgresql-run.sh /opt/bitnami/scripts/postgresql/run.sh
-
-# Make scripts executable
-RUN chmod +x /opt/bitnami/scripts/libfs.sh \
-    /opt/bitnami/scripts/liblog.sh \
-    /opt/bitnami/scripts/postgresql-env.sh \
-    /opt/bitnami/scripts/libpostgresql.sh \
-    /opt/bitnami/scripts/postgresql/setup.sh \
-    /opt/bitnami/scripts/postgresql/entrypoint.sh \
-    /opt/bitnami/scripts/postgresql/run.sh
-
-# PostgreSQL binaries are already in the correct location in the official image
-
-# Set correct ownership and permissions
-RUN chown -R bitnami:bitnami /opt/bitnami \
-    && chown -R bitnami:bitnami /bitnami \
-    && chown -R bitnami:bitnami /var/lib/postgresql \
-    && chown -R bitnami:bitnami /var/run/postgresql \
-    && chmod 755 /var/run/postgresql
-
-# Set environment variables
-ENV PGUSER=bitnami \
-    PGDATA=/bitnami/postgresql/data \
-    POSTGRES_USER=postgres \
-    POSTGRES_DB=postgres \
-    PATH="/opt/bitnami/postgresql/bin:$PATH"
+# Set proper ownership for bitnami paths
+RUN chown -R bitnami:bitnami /opt/bitnami
 
 # Expose PostgreSQL port
 EXPOSE 5432
@@ -68,9 +31,6 @@ EXPOSE 5432
 # Set working directory
 WORKDIR /opt/bitnami/postgresql
 
-# Run as bitnami user
-USER 1001
-
-# Set entrypoint
-ENTRYPOINT ["/opt/bitnami/scripts/postgresql/entrypoint.sh"]
-CMD ["/opt/bitnami/scripts/postgresql/run.sh"]
+# Use custom entrypoint that maps Bitnami variables to PostgreSQL variables
+ENTRYPOINT ["/usr/local/bin/postgresql-entrypoint.sh"]
+CMD ["postgres"]

@@ -1,0 +1,65 @@
+version: "3.8"
+
+services:
+  mariadb:
+    image: minimal-mariadb:latest
+    container_name: test-mariadb-minimal
+    environment:
+      - MARIADB_ROOT_PASSWORD=rootpassword123
+      - MARIADB_DATABASE=wordpress_test
+      - MARIADB_USER=wp_user
+      - MARIADB_PASSWORD=wp_password123
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    networks:
+      - wordpress_network
+
+  wordpress:
+    image: minimal-wordpress:latest
+    container_name: test-wordpress-minimal
+    depends_on:
+      - mariadb
+    environment:
+      # WordPress Configuration
+      - WORDPRESS_DATABASE_NAME=wordpress_test
+      - WORDPRESS_DATABASE_USER=wp_user
+      - WORDPRESS_DATABASE_PASSWORD=wp_password123
+      - MARIADB_HOST=mariadb
+      - MARIADB_PORT_NUMBER=3306
+
+      # WordPress Admin User
+      - WORDPRESS_USERNAME=admin
+      - WORDPRESS_PASSWORD=admin123
+      - WORDPRESS_EMAIL=admin@test.local
+      - WORDPRESS_FIRST_NAME=Test
+      - WORDPRESS_LAST_NAME=Admin
+      - WORDPRESS_BLOG_NAME=Test WordPress Site
+
+      # WordPress Site URLs (critical for asset loading)
+      - WORDPRESS_CONFIG_EXTRA=define('WP_HOME', 'http://localhost:8080'); define('WP_SITEURL', 'http://localhost:8080');
+
+      # WordPress Settings
+      - ALLOW_EMPTY_PASSWORD=yes
+      - BITNAMI_DEBUG=false
+
+      # Apache Settings
+      - APACHE_HTTP_PORT_NUMBER=8080
+      - APACHE_HTTPS_PORT_NUMBER=8443
+    ports:
+      - "8080:8080"
+    volumes:
+      - wordpress_data:/bitnami/wordpress
+    networks:
+      - wordpress_network
+
+volumes:
+  mariadb_data:
+    driver: local
+  wordpress_data:
+    driver: local
+
+networks:
+  wordpress_network:
+    driver: bridge
