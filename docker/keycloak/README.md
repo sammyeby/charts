@@ -317,3 +317,5 @@ For issues related to this custom image:
 4. Verify volume permissions and database connectivity
 
 For Keycloak-specific issues, refer to the [official Keycloak documentation](https://www.keycloak.org/documentation).
+
+Thank you
