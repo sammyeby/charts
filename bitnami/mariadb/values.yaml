@@ -98,8 +98,8 @@ serviceBindings:
 ## @param image.debug Specify if debug logs should be enabled
 ##
 image:
-  registry: docker.io
-  repository: mariadb
+  registry: ghcr.io
+  repository: sammyeby/bitnami-mariadb
   tag: 12.0.2-ubi
   digest: ""
   ## Specify a imagePullPolicy
