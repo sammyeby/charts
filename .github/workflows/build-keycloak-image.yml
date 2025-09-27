@@ -18,10 +18,10 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: sammyeby/bitnami-keycloak
+  IMAGE_NAME: ${{ github.repository_owner }}/bitnami-keycloak
 
 jobs:
-  build-and-push:
+  build-keycloak:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -51,9 +51,11 @@ jobs:
             type=ref,event=pr
             type=sha,prefix={{branch}}-
             type=raw,value=${{ github.event.inputs.keycloak_version || '26.3.5' }}
+            type=raw,value=${{ github.event.inputs.keycloak_version || '26.3.5' }}-minimal
             type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=minimal,enable={{is_default_branch}}
 
-      - name: Build and push Docker image
+      - name: Build and push Keycloak Docker image
         uses: docker/build-push-action@v5
         with:
           context: ./docker/keycloak

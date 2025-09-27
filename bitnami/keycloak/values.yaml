@@ -91,9 +91,9 @@ usePasswordFiles: true
 ## @param image.debug Enable Keycloak image debug mode
 ##
 image:
-  registry: quay.io
-  repository: keycloak/keycloak
-  tag: 26.3.5
+  registry: ghcr.io
+  repository: sammyeby/bitnami-keycloak
+  tag: "26.3.5-minimal"
   digest: ""
   ## Specify a imagePullPolicy
   ## ref: https://kubernetes.io/docs/concepts/containers/images/#pre-pulled-images
