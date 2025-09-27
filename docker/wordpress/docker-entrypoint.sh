@@ -14,7 +14,13 @@ export WORDPRESS_ADMIN_EMAIL="${WORDPRESS_EMAIL:-${WORDPRESS_ADMIN_EMAIL:-admin@
 
 # WordPress site configuration
 export WORDPRESS_TITLE="${WORDPRESS_BLOG_NAME:-${WORDPRESS_TITLE:-WordPress Site}}"
-export WORDPRESS_URL="http://localhost:8080"
+
+# Set WordPress URL dynamically if not provided
+if [ -z "${WORDPRESS_URL:-}" ]; then
+    # Try to determine from environment or use localhost with Apache port
+    WORDPRESS_URL="http://localhost:${APACHE_HTTP_PORT_NUMBER:-8080}"
+fi
+export WORDPRESS_URL
 
 # Database connectivity will be handled by WordPress itself
 

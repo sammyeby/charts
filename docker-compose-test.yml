@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   mariadb:
-    image: ghcr.io/sammyeby/bitnami-mariadb:12.0.2-ubi
+    image: minimal-mariadb:latest
     container_name: test-mariadb
     environment:
       # MariaDB Configuration
@@ -25,7 +25,7 @@ services:
       start_period: 30s
 
   wordpress:
-    image: ghcr.io/sammyeby/bitnami-wordpress:6.8.2
+    image: minimal-wordpress:bitnami-fixed
     container_name: test-wordpress
     depends_on:
       mariadb:
