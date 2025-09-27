@@ -17,6 +17,13 @@ RUN groupadd -r bitnami --gid=1001 && \
 
 # Create Bitnami-compatible directory structure
 RUN mkdir -p /opt/bitnami/wordpress \
+    /opt/bitnami/scripts \
+    /opt/bitnami/apache/conf \
+    /opt/bitnami/apache/logs \
+    /opt/bitnami/apache/var/run \
+    /opt/bitnami/php/etc \
+    /opt/bitnami/php/tmp \
+    /opt/bitnami/php/var \
     /bitnami/wordpress \
     && chown -R bitnami:bitnami /opt/bitnami /bitnami
 
@@ -27,15 +34,34 @@ RUN echo "Listen 8080" > /etc/apache2/ports.conf && \
     sed -i 's|<Directory /var/www/>|<Directory /opt/bitnami/wordpress/>|' /etc/apache2/apache2.conf && \
     a2enmod rewrite
 
+# Copy Bitnami scripts
+COPY liblog.sh /opt/bitnami/scripts/liblog.sh
+COPY libfs.sh /opt/bitnami/scripts/libfs.sh
+RUN chmod +x /opt/bitnami/scripts/liblog.sh /opt/bitnami/scripts/libfs.sh
+
 # Copy entrypoint script
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint-wordpress.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint-wordpress.sh
+
+# Set up PHP configuration (copy from system PHP)
+RUN cp -r /usr/local/etc/php/* /opt/bitnami/php/etc/ 2>/dev/null || true && \
+    mkdir -p /opt/bitnami/php/etc/conf.d && \
+    mkdir -p /opt/bitnami/php/var && \
+    mkdir -p /opt/bitnami/php/tmp && \
+    echo "; Bitnami PHP configuration" > /opt/bitnami/php/etc/common.conf
+
+# Set up Apache logs with symlinks to stdout/stderr (matching Bitnami naming)
+RUN ln -sf /dev/stdout /opt/bitnami/apache/logs/access_log && \
+    ln -sf /dev/stderr /opt/bitnami/apache/logs/error_log
+
+# Create Apache configuration directories
+RUN mkdir -p /opt/bitnami/apache/conf /opt/bitnami/apache/var/run
 
 # Copy WordPress files to Bitnami location and set up symlinks
 RUN cp -a /var/www/html/. /opt/bitnami/wordpress/ && \
     rm -rf /var/www/html && \
     ln -sf /opt/bitnami/wordpress /var/www/html && \
-    chown -R bitnami:bitnami /opt/bitnami/wordpress /var/log/apache2 && \
+    chown -R bitnami:bitnami /opt/bitnami/wordpress /var/log/apache2 /opt/bitnami && \
     chmod -R 755 /var/log/apache2
 
 # Set working directory
