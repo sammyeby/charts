@@ -1,5 +1,6 @@
 # Bitnami-compatible WordPress image
 # Simple drop-in replacement for ghcr.io/sammyeby/bitnami-wordpress
+# Built: 2025-09-27 with dynamic version support
 
 ARG WORDPRESS_VERSION=6.8.2
 FROM wordpress:${WORDPRESS_VERSION}

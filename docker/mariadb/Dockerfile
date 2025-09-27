@@ -1,5 +1,6 @@
 # Minimal MariaDB image compatible with Bitnami Helm charts
 # Based on official MariaDB with minimal Bitnami compatibility layer
+# Built: 2025-09-27 with dynamic version support
 
 ARG MARIADB_VERSION=12.0.2
 FROM mariadb:${MARIADB_VERSION}

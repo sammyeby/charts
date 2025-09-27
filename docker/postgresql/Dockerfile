@@ -1,5 +1,6 @@
 # Minimal PostgreSQL image compatible with Bitnami Helm charts
 # Based on official PostgreSQL with minimal Bitnami compatibility layer
+# Built: 2025-09-27 with dynamic version support
 
 ARG POSTGRESQL_VERSION=17
 FROM postgres:${POSTGRESQL_VERSION}
