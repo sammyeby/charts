@@ -71,7 +71,7 @@ S3_SECRET_KEY=admin123456
 S3_PUBLIC_ENDPOINT=https://s3.casepack.example.com
 CASEPACK_LICENSE_TOKEN=<contents-of-license.jwt>
 CASEPACK_LICENSE_KEY_SOURCE=jwks
-CASEPACK_LICENSE_JWKS_URL=https://licensing.bysam.io/.well-known/jwks.json
+CASEPACK_LICENSE_JWKS_URL=https://licensing.samuelumeh.com/.well-known/jwks.json
 CASEPACK_DEPLOYMENT_MODE=self_host
 CASEPACK_INSTALLATION_ID=inst_your-installation-id
 CASEPACK_SELF_HOST_BOOTSTRAP_ENABLED=true
@@ -243,7 +243,7 @@ helm upgrade --install casepack sammyeby/casepack \
 | `casepack-api.config.deploymentMode` | Deployment mode; include `CASEPACK_DEPLOYMENT_MODE` in `existingSecret` when using the Secret path | `self_host` |
 | `casepack-api.config.installationId` | Installation ID; include `CASEPACK_INSTALLATION_ID` in `existingSecret` when using the Secret path | `""` |
 | `casepack-api.config.licenseKeySource` | License key source | `jwks` |
-| `casepack-api.config.licenseJwksUrl` | Licensing JWKS URL | `https://licensing.bysam.io/.well-known/jwks.json` |
+| `casepack-api.config.licenseJwksUrl` | Licensing JWKS URL | `https://licensing.samuelumeh.com/.well-known/jwks.json` |
 | `casepack-api.config.activationFile` | Activation bundle path when mounted as a file | `/run/secrets/activation.json` |
 | `casepack-api.config.selfHostBootstrapEnabled` | Bootstrap toggle; include `CASEPACK_SELF_HOST_BOOTSTRAP_ENABLED` in `existingSecret` when using the Secret path | `true` |
 | `casepack-api.config.selfHostBootstrapTenantName` | Initial tenant name; include `CASEPACK_SELF_HOST_BOOTSTRAP_TENANT_NAME` in `existingSecret` when using the Secret path | `CasePack Workspace` |
@@ -267,7 +267,7 @@ helm upgrade --install casepack sammyeby/casepack \
 | `casepack-spa.config.apiBaseUrl` | API base URL | `http://localhost:8080` |
 | `casepack-spa.config.oidcAuthority` | OIDC authority URL | `http://localhost:8081/realms/casepack` |
 | `casepack-spa.config.deploymentMode` | SPA deployment mode | `SELF_HOST` |
-| `casepack-spa.config.licensingPortalUrl` | Licensing portal URL | `https://licensing.bysam.io/portal` |
+| `casepack-spa.config.licensingPortalUrl` | Licensing portal URL | `https://licensing.samuelumeh.com/portal` |
 | `casepack-spa.ingress.enabled` | Enable SPA Ingress | `false` |
 
 ### PostgreSQL (`postgresql.*`)
@@ -335,6 +335,11 @@ helm upgrade --install casepack sammyeby/casepack \
 When both `postgresql.enabled` and `keycloak.enabled` are `true`, the chart deploys a `post-install` Job that creates the `keycloak` database and user in the bundled PostgreSQL instance.
 
 ## Upgrading
+
+### To 0.8.3
+
+- **Licensing host**: the default licensing JWKS URL, base URL and portal link move from `licensing.bysam.io` to `licensing.samuelumeh.com`, where SamSoft now runs licensing. The old host keeps serving for now, so existing installs keep working; the defaults change only for installs that don't set these values.
+- **Action**: none, unless you set `casepack-api.config.licenseJwksUrl`, `casepack-api.config.licensingBaseUrl` or `casepack-spa.config.licensingPortalUrl` to a `licensing.bysam.io` URL; then point them at `licensing.samuelumeh.com`.
 
 ### To 0.8.0
 

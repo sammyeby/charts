@@ -19,7 +19,7 @@ config:
   apiBaseUrl: "/api"
   oidcAuthority: ""
   oidcClientId: "casepack-spa"
-  licensingPortalUrl: "https://staging.licensing.bysam.io/portal"
+  licensingPortalUrl: "https://licensing.samuelumeh.com/portal"
   deploymentMode: "SAAS"
   appVersion: ""
   docsBaseUrl: "https://docs.casepack.app"
