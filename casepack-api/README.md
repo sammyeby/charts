@@ -30,6 +30,10 @@ helm upgrade casepack-api oci://ghcr.io/sammyeby/charts/casepack-api \
 
 ## Upgrading
 
+### 0.34.3
+
+Documentation only: the README points to SamSoft's licensing portal instead of bysam.io. The image and values are unchanged.
+
 ### 0.33.1
 
 NIS2 reminder email delivery is opt-in. Set `config.notificationEmailDeliveryEnabled=true`
@@ -97,7 +101,7 @@ The chart expects a Kubernetes Secret with the following keys:
 | `S3_ACCESS_KEY` | S3 access key |
 | `S3_SECRET_KEY` | S3 secret key |
 | `S3_PUBLIC_ENDPOINT` | *(optional)* Browser-facing endpoint for presigned upload/download URLs. Prefer `config.s3PublicEndpoint` when using chart values. |
-| `CASEPACK_LICENSE_TOKEN` | **Required.** License JWT from [bysam.io](https://bysam.io) |
+| `CASEPACK_LICENSE_TOKEN` | **Required.** License JWT from [SamSoft's licensing portal](https://licensing.samuelumeh.com/portal) |
 | `CASEPACK_LICENSE_TOKEN_FILE` | *(optional)* Path to license file (alternative to inline token) |
 | `CASEPACK_LICENSE_PUBLIC_KEY` | *(optional)* Base64-encoded Ed25519 JWK fallback for license verification. Omit when `CASEPACK_LICENSE_KEY_SOURCE=jwks`. |
 | `CASEPACK_PROVISIONING_SECRET` | *(optional)* HMAC-SHA256 shared secret for provisioning webhook verification (64-char hex string) |
@@ -249,7 +253,7 @@ CasePack API uses Flyway for database migrations. Migrations run automatically o
 
 ## Licensing
 
-A valid license token is required to start CasePack. Obtain a license from [bysam.io](https://licensing.bysam.io) and set `CASEPACK_LICENSE_TOKEN` in your secret. For SaaS deployments using JWKS, configure `CASEPACK_LICENSE_KEY_SOURCE=jwks` and `CASEPACK_LICENSE_JWKS_URL`; do not include `CASEPACK_LICENSE_PUBLIC_KEY` unless you intentionally need an env-var fallback verifier.
+A valid license token is required to start CasePack. Obtain a license from [SamSoft's licensing portal](https://licensing.samuelumeh.com/portal) and set `CASEPACK_LICENSE_TOKEN` in your secret. For SaaS deployments using JWKS, configure `CASEPACK_LICENSE_KEY_SOURCE=jwks` and `CASEPACK_LICENSE_JWKS_URL`; do not include `CASEPACK_LICENSE_PUBLIC_KEY` unless you intentionally need an env-var fallback verifier.
 
 ## Support
 

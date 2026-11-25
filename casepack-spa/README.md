@@ -56,6 +56,10 @@ this if your config reproduces the same routing and headers.
 
 ## Upgrading
 
+### To 0.34.1
+
+`config.licensingPortalUrl` defaults to `https://licensing.samuelumeh.com/portal`, SamSoft's production licensing portal, instead of `https://staging.licensing.bysam.io/portal`. The SPA image is unchanged (0.34.0). Set the value if you point the SPA at another licensing portal.
+
 ### To the release after 0.32.0
 
 The chart no longer mounts its own nginx config by default. Earlier versions

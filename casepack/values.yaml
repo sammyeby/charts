@@ -64,8 +64,8 @@ casepack-api:
     deploymentMode: "self_host"
     installationId: ""
     licenseKeySource: "jwks"
-    licenseJwksUrl: "https://licensing.bysam.io/.well-known/jwks.json"
-    licensingBaseUrl: "https://licensing.bysam.io"
+    licenseJwksUrl: "https://licensing.samuelumeh.com/.well-known/jwks.json"
+    licensingBaseUrl: "https://licensing.samuelumeh.com"
     activationFile: "/run/secrets/activation.json"
     selfHostBootstrapEnabled: "true"
     selfHostBootstrapTenantName: "CasePack Workspace"
@@ -131,7 +131,7 @@ casepack-spa:
     oidcAuthority: "http://localhost:8081/realms/casepack"
     oidcClientId: "casepack-spa"
     deploymentMode: "SELF_HOST"
-    licensingPortalUrl: "https://licensing.bysam.io/portal"
+    licensingPortalUrl: "https://licensing.samuelumeh.com/portal"
   ingress:
     enabled: false
     className: nginx
