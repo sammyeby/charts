@@ -2,8 +2,8 @@ apiVersion: v2
 name: casepack-api
 description: CasePack API — Java backend for incident reporting and evidence management for MSPs
 type: application
-version: 0.34.3
-appVersion: "0.34.2"
+version: 0.35.0
+appVersion: "0.35.0"
 home: https://github.com/sammyeby/casepack-api
 icon: https://casepack.app/apple-touch-icon.png
 sources:
