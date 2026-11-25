@@ -31,7 +31,7 @@ annotations:
 dependencies:
   # ── Core Application ───────────────────────────────────────────
   - name: casepack-api
-    version: "0.34.2"
+    version: "0.35.0"
     repository: "oci://ghcr.io/sammyeby/charts"
 
   - name: casepack-spa
