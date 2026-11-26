@@ -336,6 +336,13 @@ When both `postgresql.enabled` and `keycloak.enabled` are `true`, the chart depl
 
 ## Upgrading
 
+### To 0.8.6
+
+Synchronize `Chart.lock` with the dependencies already declared in 0.8.5:
+CasePack API `0.35.1` and SPA `0.35.0`. This restores reproducible dependency
+builds from a source checkout. Values and application image defaults are
+unchanged; no migration action is required.
+
 ### To 0.8.3
 
 - **Licensing host**: the default licensing JWKS URL, base URL and portal link move from `licensing.bysam.io` to `licensing.samuelumeh.com`, where SamSoft now runs licensing. The old host keeps serving for now, so existing installs keep working; the defaults change only for installs that don't set these values.
