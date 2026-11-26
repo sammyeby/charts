@@ -1,25 +1,26 @@
 # SamSoft Helm Charts
 
-Official Helm charts repository for CasePack and SamSoft infrastructure charts.
+Helm charts for CasePack and Kubernetes infrastructure, maintained by **SamSoft Technologies**, a small business based in Germany.
 
 [![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/sammyeby)](https://artifacthub.io/packages/search?repo=sammyeby)
 
-## 🚀 Quick Start
+## Quick Start
 
-### OCI Registry (Recommended for Helm 3.8+)
+### OCI Registry (Helm 3.8+)
 
 Install charts directly from GitHub Container Registry:
 
 ```bash
-helm install casepack oci://ghcr.io/sammyeby/charts/casepack --version 0.8.0
-helm install casepack-api oci://ghcr.io/sammyeby/charts/casepack-api --version 0.34.0
-helm install casepack-spa oci://ghcr.io/sammyeby/charts/casepack-spa --version 0.34.0
-helm install my-wordpress oci://ghcr.io/sammyeby/charts/wordpress --version 3.0.1
-helm install my-mariadb oci://ghcr.io/sammyeby/charts/mariadb --version 1.0.3
-helm install my-memcached oci://ghcr.io/sammyeby/charts/memcached --version 1.0.3
-helm install my-keycloak oci://ghcr.io/sammyeby/charts/keycloak --version 1.4.2
-helm install gotenberg oci://ghcr.io/sammyeby/charts/gotenberg --version 0.2.1
+helm install casepack oci://ghcr.io/sammyeby/charts/casepack
+helm install my-wordpress oci://ghcr.io/sammyeby/charts/wordpress
+helm install my-keycloak oci://ghcr.io/sammyeby/charts/keycloak
 ```
+
+These commands select the latest published chart. Use `--version` to pin a chart
+version from the table below. Chart versions and container image tags are
+separate: for example, WordPress chart `3.0.1` defaults to image `7.1.3`.
+Consult the chart README for required credentials and deployment configuration;
+CasePack also requires a license and configured identity/storage services.
 
 ### Traditional Helm Repository
 
@@ -29,15 +30,105 @@ helm repo update
 helm install my-wordpress sammyeby/wordpress
 ```
 
-## 📦 Available Charts
+## Available Charts and Default Images
 
-The full, always-current list of charts and their latest versions is published at:
+These versions describe this source checkout. Chart versions come from each
+`Chart.yaml`; default images come from `values.yaml` and the image templates.
+The CasePack API, SPA and docs charts use `appVersion` when `image.tag` is empty.
 
-- **Landing page:** <https://sammyeby.github.io/charts/>
-- **Artifact Hub:** <https://artifacthub.io/packages/search?repo=sammyeby>
+| Chart / documentation | Chart version | Default application image |
+|-----------------------|---------------|---------------------------|
+| [casepack](./casepack/README.md) | `0.8.5` | Umbrella chart; see its pinned dependencies |
+| [casepack-api](./casepack-api/README.md) | `0.35.1` | `ghcr.io/sammyeby/casepack-api:0.35.1` |
+| [casepack-spa](./casepack-spa/README.md) | `0.35.0` | `ghcr.io/sammyeby/casepack-spa:0.35.0` |
+| [casepack-docs](./casepack-docs/Chart.yaml) | `0.12.0` | `ghcr.io/sammyeby/casepack-docs:0.12.0` |
+| [wordpress](./wordpress/README.md) | `3.0.1` | `ghcr.io/sammyeby/wordpress:7.1.3` |
+| [keycloak](./keycloak/README.md) | `1.4.2` | `ghcr.io/sammyeby/keycloak:26.7.4` |
+| [postgresql](./postgresql/README.md) | `2.3.2` | `ghcr.io/sammyeby/postgresql:17.10-alpine` |
+| [mariadb](./mariadb/README.md) | `1.0.3` | `docker.io/mariadb:12.0.2` |
+| [memcached](./memcached/README.md) | `1.0.3` | `docker.io/memcached:1.6.24-alpine` |
+| [minio](./minio/README.md) | `1.0.4` | `quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z` |
+| [gotenberg](./gotenberg/README.md) | `0.2.1` | `gotenberg/gotenberg:8-chromium` |
 
-> This list is generated from the published `index.yaml`, so it is intentionally not duplicated here to avoid drift.
+The published catalog is available on the [Helm repository landing page](https://sammyeby.github.io/charts/)
+and [Artifact Hub](https://artifacthub.io/packages/search?repo=sammyeby).
+An image available in [sammyeby/images](https://github.com/sammyeby/images) does
+not change chart defaults until the corresponding chart update is released.
 
+WordPress, Keycloak and PostgreSQL use SamSoft hardened images based on upstream
+projects. MariaDB, Memcached, MinIO and Gotenberg use upstream images. WordPress
+runs as UID/GID 1001 on port 8080. Keycloak defaults to the flexible variant at
+UID/GID 1001; the optional `-optimized` and `-debug` variants use UID/GID 65532.
+
+The CasePack umbrella pins subchart versions in [casepack/Chart.yaml](./casepack/Chart.yaml),
+which can differ from standalone chart versions above. WordPress and Keycloak
+also pin their dependencies in their own `Chart.yaml` files. Check those pins
+and umbrella overrides when determining the images in a complete deployment.
+
+## Usage
+
+### Install WordPress with MariaDB
+
+```bash
+helm install my-wordpress oci://ghcr.io/sammyeby/charts/wordpress \
+  --set mariadb.auth.rootPassword=example-root-password \
+  --set mariadb.auth.password=example-database-password \
+  --set wordpressPassword=example-admin-password
+```
+
+Replace example passwords before use. See the [WordPress chart documentation](./wordpress/README.md)
+for existing Secret support and configuration details.
+
+### Custom Values Example
+
+This example uses the chart's hardened WordPress image and its matching UID/port
+defaults. Save it as `values.yaml`:
+
+```yaml
+image:
+  registry: ghcr.io
+  repository: sammyeby/wordpress
+  tag: "7.1.3"
+
+wordpressUsername: admin
+wordpressEmail: admin@example.com
+wordpressBlogName: "My WordPress Site"
+wordpressPassword: example-admin-password
+
+mariadb:
+  enabled: true
+  auth:
+    rootPassword: example-root-password
+    database: wordpress
+    username: wpuser
+    password: example-database-password
+
+service:
+  type: LoadBalancer
+
+persistence:
+  enabled: true
+  size: 20Gi
+```
+
+```bash
+helm install my-wp sammyeby/wordpress -f values.yaml
+```
+
+### Migration
+
+SamSoft charts and custom images are published under `ghcr.io/sammyeby`.
+For existing releases, review each chart's upgrade notes and update explicit
+image/chart repository overrides that still point to `ghcr.io/bysamio`.
+Verify that the selected tag or digest exists at the destination before upgrading.
+The WordPress runtime user is still named `bysamio` for compatibility.
+
+When migrating from Bitnami, review values, secrets, environment variables,
+volume ownership and backup/restore procedures for each chart. The WordPress
+chart defaults to SamSoft's UID/GID 1001 image on port 8080. Switching to
+`docker.io/wordpress` also requires matching ports and security contexts; an
+image repository substitution alone is insufficient. Charts can include init
+containers and setup jobs; inspect the rendered manifests before deployment.
 
 ## Automation
 
@@ -56,227 +147,30 @@ After the OCI chart release job succeeds, this repository notifies `sammyeby/arg
 
 Snapshot, SHA, and `latest` tags are ignored. PostgreSQL tracking is limited to `*-alpine` image tags.
 
-## 📖 Documentation
-
-- [CasePack Chart](./casepack/README.md) - Full stack chart documentation
-- [CasePack API Chart](./casepack-api/README.md) - API chart documentation
-- [CasePack SPA Chart](./casepack-spa/README.md) - SPA chart documentation
-- [WordPress Chart](./wordpress/README.md) - WordPress chart documentation
-- [Keycloak Chart](./keycloak/README.md) - Keycloak chart documentation
-- [MinIO Chart](./minio/README.md) - MinIO chart documentation
-- [Gotenberg Chart](./gotenberg/README.md) - Gotenberg chart documentation
-
-## 🔗 Links
-
-- **Artifact Hub**: https://artifacthub.io/packages/search?repo=sammyeby
-- **GitHub Repository**: https://github.com/sammyeby/charts
-- **Helm Repository**: https://sammyeby.github.io/charts/
-- **OCI Registry**: `oci://ghcr.io/sammyeby/charts`
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## 📄 License
-
-See individual chart directories for licensing information.
-
-## 👤 Maintainer
-
-**SamSoft Technologies**
-- GitHub: [@sammyeby](https://github.com/sammyeby)
-
-A collection of production-ready Helm charts for deploying WordPress with MariaDB and Memcached using official Docker images.
-
-## Overview
-
-The SamSoft chart collection provides a complete WordPress stack and identity management solution with the following components:
-
-- **WordPress**: Official WordPress 6.9.0 with Apache
-- **MariaDB**: Official MariaDB 12.0.2 database
-- **Memcached**: Official Memcached 1.6.24 for caching
-- **Keycloak**: SamSoft hardened Keycloak 26.7.4 for Identity and Access Management
-
-## Key Features
-
-- **Auto-Installation**: WordPress automatically completes initial setup when configuration is provided
-- **Official Images**: Uses official Docker images instead of Bitnami variants
-- **Production Ready**: Includes health checks, security contexts, and resource management
-- **Flexible Configuration**: Comprehensive values.yaml for customization
-- **Kubernetes Native**: Proper StatefulSets, Deployments, Services, and ConfigMaps
-- **Memcached**: Uses `memcached:1.6.24-alpine` (official Memcached image)
-
-## Benefits
-
-1. **No Compatibility Issues**: Official images don't require Bitnami-specific scripts or directory structures
-2. **Direct Upstream Support**: Get updates and security patches directly from the official maintainers
-3. **Simplified Architecture**: No complex init containers or script compatibility layers
-4. **Standard Configuration**: Uses standard environment variables and configurations
-5. **Smaller Images**: Official images are often more lightweight than Bitnami equivalents
-
-## Available Charts
-
-### WordPress (`sammyeby/wordpress`)
-
-- **Image**: `ghcr.io/sammyeby/wordpress:7.1.3` (built on `wordpress:7.1.3-apache`)
-- **Features**: Full WordPress functionality with Apache, PHP, and MySQL/MariaDB support
-- **Security Context**: Non-root `bysamio` user (UID 1001) on port 8080
-- **Configuration**: Standard WordPress environment variables
-
-### MariaDB (`sammyeby/mariadb`)
-
-- **Base Image**: `mariadb:12.0.2`
-- **Features**: Full MariaDB functionality with replication support
-- **Security Context**: Uses standard `mysql` user (UID 999)
-- **Configuration**: Standard MariaDB environment variables
-
-### Memcached (`sammyeby/memcached`)
-
-- **Base Image**: `memcached:1.6.24-alpine`
-- **Features**: High-performance distributed memory caching
-- **Security Context**: Uses standard `memcache` user (UID 11211)
-- **Configuration**: Standard Memcached command-line options
-
-### Keycloak (`sammyeby/keycloak`)
-
-- **Base Image**: `ghcr.io/sammyeby/keycloak:26.7.4` (variants: `26.7.4`, `26.7.4-optimized`, `26.7.4-debug`)
-- **Features**: Open-source Identity and Access Management (IAM) with SSO, OIDC, OAuth2, SAML support
-- **Security Context**: Hardened non-root container (UID 1001 on the Alpine variant, 65532 on the distroless `-optimized`/`-debug` variants)
-- **Configuration**: Includes PostgreSQL subchart, metrics, high availability support
-- **Use Cases**: Single Sign-On (SSO), user federation, multi-factor authentication, API security
-
-## Usage
-
-### Install WordPress with MariaDB
-
-```bash
-# Add the chart repository
-helm repo add sammyeby https://sammyeby.github.io/charts/
-
-# Install WordPress with dependencies
-helm install my-wordpress sammyeby/wordpress \
-  --set mariadb.auth.rootPassword=secretpassword \
-  --set mariadb.auth.password=wordpresspassword \
-  --set wordpressPassword=adminpassword
-```
-
-### Custom Values Example
-
-```yaml
-# values.yaml
-image:
-  registry: docker.io
-  repository: wordpress
-  tag: "6.9.0-apache"
-
-wordpressUsername: admin
-wordpressEmail: admin@example.com
-wordpressBlogName: "My Official WordPress"
-
-mariadb:
-  enabled: true
-  auth:
-    rootPassword: myroot123
-    database: wordpress
-    username: wpuser
-    password: wppass123
-
-service:
-  type: LoadBalancer
-
-persistence:
-  enabled: true
-  size: 20Gi
-```
-
-### Deploy with Custom Values
-
-```bash
-helm install my-wp sammyeby/wordpress -f values.yaml
-```
-
-## Migration from Bitnami Charts
-
-If you're migrating from Bitnami charts, the main differences are:
-
-1. **Image Configuration**:
-
-   ```yaml
-   # Old (Bitnami)
-   image:
-     registry: ghcr.io
-     repository: sammyeby/bitnami-wordpress
-
-   # New (Official)
-   image:
-     registry: docker.io
-     repository: wordpress
-   ```
-
-2. **Security Context**:
-
-   ```yaml
-   # Old (Bitnami)
-   containerSecurityContext:
-     runAsUser: 1001
-     runAsGroup: 1001
-
-   # New (Official)
-   containerSecurityContext:
-     runAsUser: 33    # www-data
-     runAsGroup: 33   # www-data
-   ```
-
-3. **No Init Containers**: Official images don't need complex init containers for setup
-
-## Chart Structure
-
-```text
-/
-├── wordpress/
-│   ├── Chart.yaml
-│   ├── values.yaml
-│   └── templates/
-├── mariadb/
-│   ├── Chart.yaml
-│   ├── values.yaml
-│   └── templates/
-├── memcached/
-│   ├── Chart.yaml
-│   ├── values.yaml
-│   └── templates/
-├── keycloak/
-│   ├── Chart.yaml
-│   ├── values.yaml
-│   └── templates/
-└── postgresql/
-    ├── Chart.yaml
-    ├── values.yaml
-    └── templates/
-```
-
 ## Development
 
-To work with these charts locally:
+Chart source lives in `<chart>/Chart.yaml`, `<chart>/values.yaml` and
+`<chart>/templates/`. Each chart has its own README with configuration and
+upgrade guidance.
 
 ```bash
-# Update dependencies
 cd wordpress
-helm dependency update
-
-# Test template rendering
-helm template my-test . -f values.yaml
-
-# Dry run installation
-helm install --dry-run --debug my-test .
+helm dependency build
+helm lint . -f ../test-minikube-values.yaml
+helm template my-test . -f ../test-minikube-values.yaml
 ```
 
-## Support
+`helm dependency build` uses `Chart.lock` when present; use `helm dependency update`
+when intentionally updating dependency resolution. See [scripts/README.md](./scripts/README.md)
+for the repository's pre-commit checks.
 
-These charts are maintained by SamSoft Technologies. For issues or questions:
+## Maintainer and Support
 
-- **GitHub Issues**: [https://github.com/sammyeby/charts/issues](https://github.com/sammyeby/charts/issues)
+**SamSoft Technologies** — [@sammyeby](https://github.com/sammyeby)
 
-## License
+- [GitHub repository](https://github.com/sammyeby/charts)
+- [Issues and support](https://github.com/sammyeby/charts/issues)
+- [Container images](https://github.com/sammyeby/images)
 
-These charts are licensed under the Apache 2.0 License, same as the original Bitnami charts they're based on.
+Contributions are welcome through pull requests. See individual charts and their
+upstream projects for applicable license terms.

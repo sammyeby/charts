@@ -1,10 +1,10 @@
 dependencies:
 - name: casepack-api
   repository: oci://ghcr.io/sammyeby/charts
-  version: 0.34.2
+  version: 0.35.1
 - name: casepack-spa
   repository: oci://ghcr.io/sammyeby/charts
-  version: 0.34.0
+  version: 0.35.0
 - name: postgresql
   repository: oci://ghcr.io/sammyeby/charts
   version: 2.3.2
@@ -17,5 +17,5 @@ dependencies:
 - name: seaweedfs
   repository: https://seaweedfs.github.io/seaweedfs/helm
   version: 4.34.0
-digest: sha256:0ad2cb225765b89253b66fe6dcc7e17e3120f0d6fe996e9cdf8dcd6f60f75d43
-generated: "2026-11-25T08:26:43.922867+01:00"
+digest: sha256:76c9aad5fabe8860302439bb708e34a8baba329e350f19932e9ed79203d26714
+generated: "2026-11-26T11:41:33.058318+01:00"
