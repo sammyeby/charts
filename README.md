@@ -35,10 +35,12 @@ helm install my-wordpress sammyeby/wordpress
 These versions describe this source checkout. Chart versions come from each
 `Chart.yaml`; default images come from `values.yaml` and the image templates.
 The CasePack API, SPA and docs charts use `appVersion` when `image.tag` is empty.
+New chart versions become available in the registries after the release workflow
+completes.
 
 | Chart / documentation | Chart version | Default application image |
 |-----------------------|---------------|---------------------------|
-| [casepack](./casepack/README.md) | `0.8.5` | Umbrella chart; see its pinned dependencies |
+| [casepack](./casepack/README.md) | `0.8.6` | Umbrella chart; see its pinned dependencies |
 | [casepack-api](./casepack-api/README.md) | `0.35.1` | `ghcr.io/sammyeby/casepack-api:0.35.1` |
 | [casepack-spa](./casepack-spa/README.md) | `0.35.0` | `ghcr.io/sammyeby/casepack-spa:0.35.0` |
 | [casepack-docs](./casepack-docs/Chart.yaml) | `0.12.0` | `ghcr.io/sammyeby/casepack-docs:0.12.0` |
