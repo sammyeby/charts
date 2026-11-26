@@ -1638,6 +1638,30 @@ entries:
       artifacthub.io/category: security
       artifacthub.io/license: Proprietary
     apiVersion: v2
+    appVersion: 0.12.0
+    created: "2026-11-26T09:29:42.700575297Z"
+    description: CasePack Docs — Documentation for CasePack - Incident reporting,
+      evidence management for MSPs.
+    digest: f0574d48a7e3eacc994560a1ea2f015b67a6b25eb5a219f4efdc9b8734f2fdb2
+    home: https://docs.casepack.app
+    icon: https://casepack.app/apple-touch-icon.png
+    keywords:
+    - casepack
+    - documentation
+    maintainers:
+    - name: SamSoft Technologies
+      url: https://github.com/sammyeby
+    name: casepack-docs
+    sources:
+    - https://github.com/sammyeby/casepack-docs
+    type: application
+    urls:
+    - https://github.com/sammyeby/charts/releases/download/casepack-docs-0.12.0/casepack-docs-0.12.0.tgz
+    version: 0.12.0
+  - annotations:
+      artifacthub.io/category: security
+      artifacthub.io/license: Proprietary
+    apiVersion: v2
     appVersion: 0.11.0
     created: "2026-10-19T19:53:25.143143369Z"
     description: CasePack Docs — Documentation for CasePack - Incident reporting,
@@ -4334,4 +4358,4 @@ entries:
     urls:
     - https://github.com/bysamio/charts/releases/download/wordpress-1.0.4/wordpress-1.0.4.tgz
     version: 1.0.4
-generated: "2026-11-26T09:11:55.370804194Z"
+generated: "2026-11-26T09:29:42.700775922Z"
