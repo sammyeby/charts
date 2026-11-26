@@ -2,8 +2,8 @@ apiVersion: v2
 name: casepack-docs
 description: CasePack Docs — Documentation for CasePack - Incident reporting, evidence management for MSPs.
 type: application
-version: 0.11.0
-appVersion: "0.11.0"
+version: 0.12.0
+appVersion: "0.12.0"
 home: https://docs.casepack.app
 icon: https://casepack.app/apple-touch-icon.png
 keywords:
