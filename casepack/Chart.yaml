@@ -4,8 +4,8 @@ description: >-
   CasePack — multi-tenant incident evidence management platform for MSPs.
   Deploys the full stack in one command.
 type: application
-version: 0.8.8
-appVersion: "0.8.8"
+version: 0.8.9
+appVersion: "0.8.9"
 home: https://casepack.app
 icon: https://casepack.app/apple-touch-icon.png
 sources:
