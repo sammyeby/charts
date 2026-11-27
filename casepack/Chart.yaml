@@ -35,7 +35,7 @@ dependencies:
     repository: "oci://ghcr.io/sammyeby/charts"
 
   - name: casepack-spa
-    version: "0.35.0"
+    version: "0.36.0"
     repository: "oci://ghcr.io/sammyeby/charts"
 
   # ── Infrastructure (optional — disable if using external services) ─
